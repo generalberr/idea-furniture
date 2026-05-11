@@ -269,7 +269,7 @@ function ProductCard({ p, onClick }) {
   return (
     <div className="card" onClick={onClick}>
       <div style={{ height: 230, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: mainPhoto ? 0 : 38, position: "relative", overflow: "hidden" }}>
-        {mainPhoto ? <img src={mainPhoto} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <FurnitureSVG type={p.img} color={p.colors[0].h} />}
+        {mainPhoto ? <img src={mainPhoto} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={p.img} color={p.colors[0].h} />}
         <div style={{ position: "absolute", top: 12, left: 12 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".11em", textTransform: "uppercase", padding: "3px 9px", ...tagStyle }}>{p.tag}</span></div>
       </div>
       <div style={{ padding: "18px 22px 24px" }}>
@@ -307,7 +307,7 @@ function Catalog({ go }) {
           {list.map(p => (
             <div key={p.id} className="card" onClick={() => { setSel(p); setSc(0); setSs(0); }}>
               <div style={{ height: 220, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: p.colors[0].photo ? 0 : 36, position: "relative", overflow: "hidden" }}>
-                {p.colors[0].photo ? <img src={p.colors[0].photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <FurnitureSVG type={p.img} color={p.colors[0].h} />}
+                {p.colors[0].photo ? <img src={p.colors[0].photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={p.img} color={p.colors[0].h} />}
                 <div style={{ position: "absolute", top: 11, left: 11 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".11em", textTransform: "uppercase", padding: "3px 9px", ...tagStyle(p.tag) }}>{p.tag}</span></div>
               </div>
               <div style={{ padding: "16px 20px 22px" }}>
@@ -329,7 +329,7 @@ function Catalog({ go }) {
         <div className="mo">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
             <div style={{ background: "#FAF8F5", padding: sel.colors[sc].photo ? 0 : 52, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 440, overflow: "hidden" }}>
-              {sel.colors[sc].photo ? <img src={sel.colors[sc].photo} alt={sel.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <FurnitureSVG type={sel.img} color={sel.colors[sc].h} />}
+              {sel.colors[sc].photo ? <img src={sel.colors[sc].photo} alt={sel.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={sel.img} color={sel.colors[sc].h} />}
             </div>
             <div style={{ padding: "44px 44px 44px 36px", display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setSel(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9B9390", fontSize: 22 }}>×</button></div>

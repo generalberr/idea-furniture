@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 
 const PRODUCTS = [
-  { id:1, cat:"Living Room", name:"Arc Sofa", mat:"Italian Linen", price:2400, tag:"Bestseller", desc:"Clean lines, deep comfort. Crafted in solid walnut with hand-stitched upholstery. Available in 3 widths.", dims:"W220 × D90 × H75 cm", img:"sofa", colors:[{n:"Sand",h:"#C9B99A",photo:"/sofa-sand.jpg"},{n:"Slate",h:"#6B6B6B",photo:"/sofa-slate.jpg"},{n:"Onyx",h:"#2C2C2C",photo:"/sofa-onyx.jpg"},{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}], sizes:["2-Seater","3-Seater","Corner L-Shape"] },
+  { id:1, cat:"Living Room", name:"Arc Sofa", mat:"Italian Linen", price:2400, tag:"Bestseller", desc:"Clean lines, deep comfort. Crafted in solid walnut with hand-stitched upholstery. Available in 3 widths.", dims:"W220 × D90 × H75 cm", img:"sofa",
+    colors:[{n:"Sand",h:"#C9B99A",photo:"/sofa-sand.jpg"},{n:"Slate",h:"#6B6B6B",photo:"/sofa-slate.jpg"},{n:"Onyx",h:"#2C2C2C",photo:"/sofa-onyx.jpg"},{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}],
+    sizes:["2-Seater","3-Seater","Corner L-Shape"],
+    sizePhotos:{
+      "2-Seater":  {Sand:"/2seater-sand.jpg", Slate:"/2seater-slate.jpg", Onyx:"/2seater-onyx.jpg", Ivory:"/2seater-ivory.jpg"},
+      "3-Seater":  {Sand:"/sofa-sand.jpg",    Slate:"/sofa-slate.jpg",    Onyx:"/sofa-onyx.jpg",   Ivory:"/sofa-ivory.jpg"},
+      "Corner L-Shape": {Sand:"/corner-sand.jpg", Slate:"/corner-slate.jpg", Onyx:"/corner-onyx.jpg", Ivory:"/corner-ivory.jpg"},
+    }
+  },
   { id:2, cat:"Bedroom", name:"Zen Bed Frame", mat:"Solid Walnut", price:1800, tag:"New", desc:"A floating silhouette that transforms any bedroom into a sanctuary. Platform design, no box spring needed.", dims:"W180 × D210 × H40 cm", img:"bed", colors:[{n:"Walnut",h:"#8B6F5C"},{n:"Onyx",h:"#2C2C2C"},{n:"Sand",h:"#C9B99A"}], sizes:["Queen 160cm","King 180cm","Super King 200cm"] },
   { id:3, cat:"Dining", name:"Slab Dining Table", mat:"Live Edge Oak", price:3200, tag:"Custom", desc:"Every table is unique. Live edge oak slab with brushed steel hairpin legs. Each piece is one of a kind.", dims:"W240 × D100 × H75 cm", img:"table", colors:[{n:"Natural Oak",h:"#8B6F5C"},{n:"Ebonized",h:"#4A4A4A"},{n:"Bleached",h:"#C9B99A"}], sizes:["6-Seater 180cm","8-Seater 220cm","10-Seater 260cm"] },
   { id:4, cat:"Office", name:"Focus Desk", mat:"Matte Steel + Oak", price:1200, tag:"Popular", desc:"Engineered for deep work. Integrated cable management, solid oak surface, powder-coated steel frame.", dims:"W160 × D70 × H75 cm", img:"desk", colors:[{n:"Onyx",h:"#2C2C2C"},{n:"Walnut",h:"#8B6F5C"},{n:"Slate",h:"#4A4A4A"}], sizes:["140cm","160cm","180cm","L-Shape 200cm"] },
@@ -329,7 +337,14 @@ function Catalog({ go }) {
         <div className="mo">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
             <div style={{ background: "#FAF8F5", padding: sel.colors[sc].photo ? 0 : 52, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 440, overflow: "hidden" }}>
-              {sel.colors[sc].photo ? <img src={sel.colors[sc].photo} alt={sel.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={sel.img} color={sel.colors[sc].h} />}
+              {(() => {
+                const photo = sel.sizePhotos
+                  ? sel.sizePhotos[sel.sizes[ss]]?.[sel.colors[sc].n] || sel.colors[sc].photo
+                  : sel.colors[sc].photo;
+                return photo
+                  ? <img src={photo} alt={sel.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} />
+                  : <FurnitureSVG type={sel.img} color={sel.colors[sc].h} />;
+              })()}
             </div>
             <div style={{ padding: "44px 44px 44px 36px", display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setSel(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9B9390", fontSize: 22 }}>×</button></div>

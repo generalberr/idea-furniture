@@ -194,7 +194,11 @@ function Home({ go }) {
           <button className="b3" onClick={() => go("catalog")}>View All →</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
-          {PRODUCTS.slice(0,3).map(p => <ProductCard key={p.id} p={p} onClick={() => go("catalog")} />)}
+          {[
+            {...PRODUCTS.find(p=>p.id===1), colors:[{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}]},
+            {...PRODUCTS.find(p=>p.id===14), colors:[{n:"Walnut + Sand",h:"#8B6F5C",photo:"/shoe-bench.jpg"}]},
+            {...PRODUCTS.find(p=>p.id===19), colors:[{n:"Natural Oak",h:"#8B6F5C",photo:"/tv-oak.jpg"}]},
+          ].map(p => <ProductCard key={p.id} p={p} onClick={() => go("catalog")} />)}
         </div>
       </div>
 

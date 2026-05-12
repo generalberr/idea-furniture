@@ -171,8 +171,8 @@ function Home({ go }) {
         <div style={{ background: "#1A1714", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", minHeight: "calc(100vh - 66px)" }}>
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 28% 45%, rgba(139,111,92,.3) 0%, transparent 62%)" }} />
           <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-            <img src="/corner-curved-2.jpg" alt="Corner Sofa" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }} />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(26,23,20,.15) 0%, transparent 40%, rgba(26,23,20,.5) 100%)" }} />
+            <img src="/corner-curved-2.jpg" alt="Corner Sofa" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center center", background: "#E8E4DF" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(26,23,20,.05) 0%, transparent 40%, rgba(26,23,20,.5) 100%)" }} />
           </div>
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 36px", borderTop: "1px solid rgba(255,255,255,.06)", zIndex: 2 }}>
             <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".16em", color: "rgba(255,255,255,.5)", textTransform: "uppercase" }}>Featured</div>

@@ -313,6 +313,7 @@ function ProductCard({ p, onClick }) {
 function Catalog({ go }) {
   const [cat, setCat] = useState("All");
   const [sel, setSel] = useState(null);
+  const [fullscreen, setFullscreen] = useState(false);
   const [sc, setSc] = useState(0);
   const [ss, setSs] = useState(0);
   const [qOpen, setQOpen] = useState(false);
@@ -349,10 +350,10 @@ function Catalog({ go }) {
       </div>
 
       {sel && <>
-        <div className="ov" onClick={() => setSel(null)} />
+        <div className="ov" onClick={() => { setSel(null); setFullscreen(false); }} />
         <div className="mo">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-            <div style={{ background: "#FAF8F5", padding: sel.colors[sc].photo ? 0 : 52, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 440, overflow: "hidden" }}>
+            <div style={{ background: "#FAF8F5", padding: sel.colors[sc].photo ? 0 : 52, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 440, overflow: "hidden", position: "relative" }}>
               {(() => {
                 const photo = sel.sizePhotos
                   ? sel.sizePhotos[sel.sizes[ss]]?.[sel.colors[sc].n] || sel.colors[sc].photo
@@ -361,7 +362,29 @@ function Catalog({ go }) {
                   ? <img src={photo} alt={sel.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} />
                   : <FurnitureSVG type={sel.img} color={sel.colors[sc].h} />;
               })()}
+              {/* Fullscreen button */}
+              {(sel.sizePhotos ? sel.sizePhotos[sel.sizes[ss]]?.[sel.colors[sc].n] || sel.colors[sc].photo : sel.colors[sc].photo) && (
+                <button onClick={() => setFullscreen(true)}
+                  style={{ position: "absolute", bottom: 14, right: 14, background: "rgba(26,23,20,.75)", border: "none", color: "white", padding: "8px 14px", fontFamily: "'DM Sans', sans-serif", fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, backdropFilter: "blur(4px)", letterSpacing: ".08em" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+                  Full View
+                </button>
+              )}
             </div>
+
+            {/* Fullscreen overlay */}
+            {fullscreen && (() => {
+              const photo = sel.sizePhotos
+                ? sel.sizePhotos[sel.sizes[ss]]?.[sel.colors[sc].n] || sel.colors[sc].photo
+                : sel.colors[sc].photo;
+              return (
+                <div onClick={() => setFullscreen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.95)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out" }}>
+                  <img src={photo} alt={sel.name} style={{ maxWidth: "92vw", maxHeight: "92vh", objectFit: "contain" }} />
+                  <button onClick={() => setFullscreen(false)} style={{ position: "absolute", top: 24, right: 24, background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.2)", color: "white", width: 44, height: 44, borderRadius: "50%", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+                  <div style={{ position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)", fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,.4)", letterSpacing: ".1em" }}>Click anywhere to close</div>
+                </div>
+              );
+            })()}
             <div style={{ padding: "44px 44px 44px 36px", display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}><button onClick={() => setSel(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#9B9390", fontSize: 22 }}>×</button></div>
               <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".12em", color: "#9B9390", textTransform: "uppercase", marginBottom: 5 }}>{sel.cat}</div>

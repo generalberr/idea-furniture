@@ -170,11 +170,14 @@ function Home({ go }) {
         </div>
         <div style={{ background: "#1A1714", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 28% 45%, rgba(139,111,92,.3) 0%, transparent 62%)" }} />
-          <div style={{ position: "relative", zIndex: 1, width: "75%" }}><FurnitureSVG type="sofa" color="#C9B99A" /></div>
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 36px", borderTop: "1px solid rgba(255,255,255,.06)" }}>
-            <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".16em", color: "rgba(255,255,255,.3)", textTransform: "uppercase" }}>Featured</div>
-            <div className="sf" style={{ fontSize: 21, color: "white", marginTop: 4, fontWeight: 300 }}>Arc Sofa — Italian Linen</div>
-            <div style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#C9B99A", marginTop: 3 }}>From $2,400</div>
+          <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+            <img src="/corner-curved-2.jpg" alt="Corner Sofa" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: .85 }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(26,23,20,.4) 0%, transparent 60%)" }} />
+          </div>
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 36px", borderTop: "1px solid rgba(255,255,255,.06)", zIndex: 2 }}>
+            <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".16em", color: "rgba(255,255,255,.5)", textTransform: "uppercase" }}>Featured</div>
+            <div className="sf" style={{ fontSize: 21, color: "white", marginTop: 4, fontWeight: 300 }}>Curved Bouclé Corner II</div>
+            <div style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#C9B99A", marginTop: 3 }}>From $1,350</div>
           </div>
         </div>
       </div>

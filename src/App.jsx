@@ -179,7 +179,6 @@ function Home({ go }) {
           <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#C9B99A", marginTop: 3 }}>Handmade in Beirut · From $1,350</div>
         </div>
       </div>
-      </div>
 
       {/* Marquee */}
       <div style={{ background: "#8B6F5C", padding: "12px 0", overflow: "hidden" }}>

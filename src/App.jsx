@@ -200,31 +200,6 @@ function Home({ go }) {
         </div>
       </div>
 
-      {/* Visualizer Promo */}
-      <div style={{ background: "#1A1714", padding: "72px 56px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
-        <div>
-          <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".2em", color: "#8B6F5C", textTransform: "uppercase", marginBottom: 18 }}>AI Room Visualizer</div>
-          <h2 className="sf" style={{ fontSize: "clamp(28px,4vw,46px)", fontWeight: 300, color: "white", lineHeight: 1.1, marginBottom: 22 }}>See it in your <em style={{ color: "#C9B99A" }}>home</em> before you order.</h2>
-          <p style={{ fontFamily: "'DM Sans'", fontSize: 14, fontWeight: 300, color: "rgba(255,255,255,.45)", lineHeight: 1.8, maxWidth: 340, marginBottom: 30 }}>Upload a photo of your room. Our AI places any piece into your space at real scale.</p>
-          {["Upload your room photo","Choose & customize furniture","AI places it in your room","Request a quote for that config"].map((s,i) => (
-            <div key={i} style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 13 }}>
-              <div style={{ width: 27, height: 27, border: "1px solid rgba(139,111,92,.5)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 10, color: "#8B6F5C" }}>0{i+1}</span></div>
-              <span style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "rgba(255,255,255,.48)", fontWeight: 300 }}>{s}</span>
-            </div>
-          ))}
-          <button className="b2" style={{ marginTop: 30 }} onClick={() => go("viz")}>✦ Open Visualizer</button>
-        </div>
-        <div style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.07)", padding: 36 }}>
-          <div style={{ aspectRatio: "4/3", background: "rgba(255,255,255,.02)", border: "2px dashed rgba(139,111,92,.3)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16 }}>
-            <div style={{ fontSize: 32 }}>📷</div>
-            <span style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "rgba(255,255,255,.28)", textAlign: "center" }}>Upload room photo</span>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            {PRODUCTS.slice(0,4).map(p => <div key={p.id} style={{ padding: "7px 12px", border: "1px solid rgba(255,255,255,.06)" }}><span style={{ fontFamily: "'DM Sans'", fontSize: 11, color: "rgba(255,255,255,.35)" }}>{p.name}</span></div>)}
-          </div>
-        </div>
-      </div>
-
       {/* Process */}
       <div style={{ padding: "72px 56px", background: "#FAF8F5" }}>
         <div style={{ textAlign: "center", marginBottom: 54 }}>

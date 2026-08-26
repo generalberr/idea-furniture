@@ -153,33 +153,32 @@ function Home({ go }) {
   return (
     <div>
       <NavBar go={go} onQ={() => setQOpen(true)} />
-      <div style={{ display: "grid", gridTemplateColumns: "55% 45%", minHeight: "calc(100vh - 66px)" }}>
-        <div style={{ padding: "68px 56px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div className="fu" style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".22em", textTransform: "uppercase", color: "#8B6F5C", marginBottom: 24, animationDelay: ".05s" }}>Handcrafted in Beirut · Est. 2024</div>
-          <h1 className="sf fu" style={{ fontSize: "clamp(44px,5.5vw,74px)", fontWeight: 300, lineHeight: 1.03, marginBottom: 28, animationDelay: ".15s" }}>Where every<br /><em>idea</em><br />takes form.</h1>
-          <p className="fu" style={{ fontFamily: "'DM Sans'", fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: "#6B6460", maxWidth: 380, marginBottom: 36, animationDelay: ".28s" }}>Custom furniture, built by hand in our Beirut workshop. Every piece made for you, and only you.</p>
-          <div className="fu" style={{ display: "flex", gap: 10, flexWrap: "wrap", animationDelay: ".4s" }}>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "16/8", minHeight: 480, maxHeight: "88vh", overflow: "hidden" }}>
+        <img src="/hero-workshop.jpg" alt="Beirut Workshop" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 42%" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(100deg, rgba(20,16,12,.72) 0%, rgba(20,16,12,.42) 35%, rgba(20,16,12,.08) 65%, transparent 85%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,16,12,.55) 0%, transparent 30%)" }} />
+
+        <div style={{ position: "relative", zIndex: 2, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "40px 56px" }}>
+          <div className="fu" style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".22em", textTransform: "uppercase", color: "#C9B99A", marginBottom: 22, animationDelay: ".05s" }}>Handcrafted in Beirut · Est. 2024</div>
+          <h1 className="sf fu" style={{ fontSize: "clamp(38px,5.5vw,68px)", fontWeight: 300, lineHeight: 1.05, marginBottom: 24, color: "white", animationDelay: ".15s" }}>Where every <em>idea</em> takes form.</h1>
+          <p className="fu" style={{ fontFamily: "'DM Sans'", fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: "rgba(255,255,255,.75)", maxWidth: 420, marginBottom: 32, animationDelay: ".28s" }}>Custom furniture, built by hand in our Beirut workshop. Every piece made for you, and only you.</p>
+          <div className="fu" style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 44, animationDelay: ".4s" }}>
             <button className="b1" onClick={() => go("catalog")}>Explore Collection →</button>
-            <button className="b3" onClick={() => go("viz")}>✦ Room Visualizer</button>
+            <button className="b3" style={{ borderColor: "rgba(255,255,255,.4)", color: "white" }} onClick={() => go("viz")}>✦ Room Visualizer</button>
           </div>
-          <div className="fu" style={{ display: "flex", gap: 44, marginTop: 50, animationDelay: ".52s" }}>
+          <div className="fu" style={{ display: "flex", gap: 44, animationDelay: ".52s" }}>
             {[["200+","Pieces Crafted"],["8yr","Experience"],["100%","Bespoke"]].map(([n,l]) => (
-              <div key={l}><div className="sf" style={{ fontSize: 27, fontWeight: 300 }}>{n}</div><div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".1em", color: "#9B9390", textTransform: "uppercase", marginTop: 3 }}>{l}</div></div>
+              <div key={l}><div className="sf" style={{ fontSize: 25, fontWeight: 300, color: "white" }}>{n}</div><div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".1em", color: "rgba(255,255,255,.6)", textTransform: "uppercase", marginTop: 3 }}>{l}</div></div>
             ))}
           </div>
         </div>
-        <div style={{ background: "#1A1714", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", minHeight: "calc(100vh - 66px)" }}>
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 28% 45%, rgba(139,111,92,.3) 0%, transparent 62%)" }} />
-          <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-            <img src="/hero-workshop.jpg" alt="Beirut Workshop" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 40%" }} />
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(26,23,20,.1) 0%, transparent 35%, rgba(26,23,20,.55) 100%)" }} />
-          </div>
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "24px 36px", borderTop: "1px solid rgba(255,255,255,.06)", zIndex: 2 }}>
-            <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".16em", color: "rgba(255,255,255,.5)", textTransform: "uppercase" }}>From Our Workshop</div>
-            <div className="sf" style={{ fontSize: 21, color: "white", marginTop: 4, fontWeight: 300 }}>Curved Bouclé Corner II</div>
-            <div style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#C9B99A", marginTop: 3 }}>Handmade in Beirut · From $1,350</div>
-          </div>
+
+        <div style={{ position: "absolute", bottom: 22, right: 36, textAlign: "right", zIndex: 2 }}>
+          <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".16em", color: "rgba(255,255,255,.5)", textTransform: "uppercase" }}>From Our Workshop</div>
+          <div className="sf" style={{ fontSize: 19, color: "white", marginTop: 4, fontWeight: 300 }}>Curved Bouclé Corner II</div>
+          <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#C9B99A", marginTop: 3 }}>Handmade in Beirut · From $1,350</div>
         </div>
+      </div>
       </div>
 
       {/* Marquee */}

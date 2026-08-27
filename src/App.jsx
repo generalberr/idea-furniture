@@ -111,30 +111,28 @@ const CSS = `
 export default function App() {
   const [page, setPage] = useState("home");
   const [auth, setAuth] = useState(false);
-  const [products, setProducts] = useState(SEED_PRODUCTS);
+  const [products, setProducts] = useState(null); // null = still loading from database
   const [dbReady, setDbReady] = useState(false);
 
   const refreshProducts = async () => {
     const { data, error } = await supabase.from("products").select("*").order("id", { ascending: true });
     if (!error && data) {
-      if (data.length > 0) {
-        setProducts(data.map(rowToProduct));
-        setDbReady(true);
-      } else {
-        setDbReady(true); // table exists but empty — admin can seed it
-      }
+      setProducts(data.map(rowToProduct)); // always reflects the REAL database, even if empty
     }
+    setDbReady(true);
   };
 
   useEffect(() => { refreshProducts(); }, []);
 
+  const list = products || []; // safe empty list while first load is in flight
+
   return (
     <div style={{ minHeight: "100vh", fontFamily: "'DM Sans', sans-serif", background: "#F4F1ED", color: "#1A1714" }}>
       <style>{CSS}</style>
-      {page === "home" && <Home go={setPage} products={products} />}
-      {page === "catalog" && <Catalog go={setPage} products={products} />}
-      {page === "viz" && <Viz go={setPage} products={products} />}
-      {page === "admin" && <Admin go={setPage} auth={auth} setAuth={setAuth} products={products} refreshProducts={refreshProducts} dbReady={dbReady} />}
+      {page === "home" && <Home go={setPage} products={list} />}
+      {page === "catalog" && <Catalog go={setPage} products={list} />}
+      {page === "viz" && <Viz go={setPage} products={list} />}
+      {page === "admin" && <Admin go={setPage} auth={auth} setAuth={setAuth} products={list} refreshProducts={refreshProducts} dbReady={dbReady} />}
     </div>
   );
 }
@@ -720,9 +718,7 @@ function Admin({ go, auth, setAuth, products, refreshProducts, dbReady }) {
                 <p style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#9B9390", marginTop: 4 }}>{products.length} live on your website</p>
               </div>
               <div style={{ display: "flex", gap: 10 }}>
-                {products.length < 5 && (
-                  <button className="b3" onClick={seedDatabase} disabled={seeding}>{seeding ? "Importing..." : "Import Starter Catalog"}</button>
-                )}
+                <button className="b3" onClick={seedDatabase} disabled={seeding}>{seeding ? "Importing..." : "Import Starter Catalog"}</button>
                 <button className="b1" onClick={() => { setEditing(null); setAddOpen(true); }}>+ Add Product</button>
               </div>
             </div>

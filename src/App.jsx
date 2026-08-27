@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase, rowToProduct, productToRow } from "./supabaseClient";
 
-const PRODUCTS = [
+const SEED_PRODUCTS = [
   { id:1, cat:"Living Room", name:"Arc Sofa", mat:"Italian Linen", price:2400, tag:"Bestseller", desc:"Clean lines, deep comfort. Crafted in solid walnut with hand-stitched upholstery. Available in 3 widths.", dims:"W220 × D90 × H75 cm", img:"sofa",
     colors:[{n:"Sand",h:"#C9B99A",photo:"/sofa-sand.jpg"},{n:"Slate",h:"#6B6B6B",photo:"/sofa-slate.jpg"},{n:"Onyx",h:"#2C2C2C",photo:"/sofa-onyx.jpg"},{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}],
     sizes:["2-Seater","3-Seater","Corner L-Shape"],
@@ -110,13 +111,30 @@ const CSS = `
 export default function App() {
   const [page, setPage] = useState("home");
   const [auth, setAuth] = useState(false);
+  const [products, setProducts] = useState(SEED_PRODUCTS);
+  const [dbReady, setDbReady] = useState(false);
+
+  const refreshProducts = async () => {
+    const { data, error } = await supabase.from("products").select("*").order("id", { ascending: true });
+    if (!error && data) {
+      if (data.length > 0) {
+        setProducts(data.map(rowToProduct));
+        setDbReady(true);
+      } else {
+        setDbReady(true); // table exists but empty — admin can seed it
+      }
+    }
+  };
+
+  useEffect(() => { refreshProducts(); }, []);
+
   return (
     <div style={{ minHeight: "100vh", fontFamily: "'DM Sans', sans-serif", background: "#F4F1ED", color: "#1A1714" }}>
       <style>{CSS}</style>
-      {page === "home" && <Home go={setPage} />}
-      {page === "catalog" && <Catalog go={setPage} />}
-      {page === "viz" && <Viz go={setPage} />}
-      {page === "admin" && <Admin go={setPage} auth={auth} setAuth={setAuth} />}
+      {page === "home" && <Home go={setPage} products={products} />}
+      {page === "catalog" && <Catalog go={setPage} products={products} />}
+      {page === "viz" && <Viz go={setPage} products={products} />}
+      {page === "admin" && <Admin go={setPage} auth={auth} setAuth={setAuth} products={products} refreshProducts={refreshProducts} dbReady={dbReady} />}
     </div>
   );
 }
@@ -147,7 +165,7 @@ function NavBar({ go, dark, onQ }) {
 }
 
 /* ─── HOME ─── */
-function Home({ go }) {
+function Home({ go, products }) {
   const [qOpen, setQOpen] = useState(false);
   const words = ["Custom Furniture","·","Handcrafted","·","Beirut Workshop","·","Made to Measure","·","Solid Wood","·","Bespoke Design","·"];
   return (
@@ -193,9 +211,9 @@ function Home({ go }) {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
           {[
-            {...PRODUCTS.find(p=>p.id===1), colors:[{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}]},
-            {...PRODUCTS.find(p=>p.id===14), colors:[{n:"Walnut + Sand",h:"#8B6F5C",photo:"/shoe-bench.jpg"}]},
-            {...PRODUCTS.find(p=>p.id===19), colors:[{n:"Natural Oak",h:"#8B6F5C",photo:"/tv-oak.jpg"}]},
+            {...(products.find(p=>p.name==="Arc Sofa")||{}), colors:[{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}]},
+            {...(products.find(p=>p.name==="Walnut Bench")||{}), colors:[{n:"Walnut + Sand",h:"#8B6F5C",photo:"/shoe-bench.jpg"}]},
+            {...(products.find(p=>p.name==="Oak Media Wall")||{}), colors:[{n:"Natural Oak",h:"#8B6F5C",photo:"/tv-oak.jpg"}]},
           ].map(p => <ProductCard key={p.id} p={p} onClick={() => go("catalog")} />)}
         </div>
       </div>
@@ -296,7 +314,7 @@ function ProductCard({ p, onClick }) {
 }
 
 /* ─── CATALOG ─── */
-function Catalog({ go }) {
+function Catalog({ go, products }) {
   const [cat, setCat] = useState("All");
   const [sel, setSel] = useState(null);
   const [fullscreen, setFullscreen] = useState(false);
@@ -305,7 +323,7 @@ function Catalog({ go }) {
   const [qOpen, setQOpen] = useState(false);
   const [qP, setQP] = useState(null);
   const cats = ["All","Living Room","Bedroom","Dining","Office","Entryway"];
-  const list = cat === "All" ? PRODUCTS : PRODUCTS.filter(p => p.cat === cat);
+  const list = cat === "All" ? products : products.filter(p => p.cat === cat);
   const tagStyle = (tag) => tag === "New" ? { background: "#1A1714", color: "white" } : tag === "Bestseller" ? { background: "#8B6F5C", color: "white" } : { background: "transparent", color: "#8B6F5C", border: "1px solid #8B6F5C" };
   return (
     <div style={{ background: "#F4F1ED", minHeight: "100vh" }}>
@@ -402,7 +420,7 @@ function Catalog({ go }) {
 }
 
 /* ─── VISUALIZER ─── */
-function Viz({ go }) {
+function Viz({ go, products }) {
   const [roomImg, setRoomImg] = useState(null);
   const [sp, setSp] = useState(null);
   const [sc, setSc] = useState(0);
@@ -456,7 +474,7 @@ function Viz({ go }) {
       <div style={{ flex: 1, display: "grid", gridTemplateColumns: "240px 1fr 280px", overflow: "hidden" }}>
         <div style={{ borderRight: "1px solid rgba(26,23,20,.08)", overflowY: "auto", padding: "14px 0" }}>
           <div style={{ padding: "0 15px 10px", fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: "#9B9390" }}>Select Furniture</div>
-          {PRODUCTS.map(p => (
+          {products.map(p => (
             <div key={p.id} className={`pi${sp?.id === p.id ? " on" : ""}`} onClick={() => pick(p)}>
               <div style={{ width: 44, height: 34, flexShrink: 0 }}><FurnitureSVG type={p.img} color={sp?.id === p.id ? "#8B6F5C" : "#C9B99A"} /></div>
               <div><div style={{ fontFamily: "'DM Sans'", fontSize: 12, fontWeight: sp?.id === p.id ? 500 : 300, color: sp?.id === p.id ? "#1A1714" : "#5A5350" }}>{p.name}</div><div style={{ fontFamily: "'DM Sans'", fontSize: 10, color: "#8B6F5C", marginTop: 1 }}>${p.price.toLocaleString()}</div></div>
@@ -527,12 +545,16 @@ function Viz({ go }) {
 }
 
 /* ─── ADMIN ─── */
-function Admin({ go, auth, setAuth }) {
+function Admin({ go, auth, setAuth, products, refreshProducts, dbReady }) {
   const [sec, setSec] = useState("dash");
   const [cr, setCr] = useState({ u: "", p: "" });
   const [err, setErr] = useState(false);
   const [quotes, setQuotes] = useState(QUOTES);
   const [sq, setSq] = useState(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const login = () => { if (cr.u==="admin" && cr.p==="idea2024") { setAuth(true); setErr(false); } else setErr(true); };
 
   if (!auth) return (
@@ -555,6 +577,39 @@ function Admin({ go, auth, setAuth }) {
   const sb = { New:"#FEF3C7", "In Progress":"#DBEAFE", Quoted:"#D1FAE5", Closed:"#F3F4F6" };
   const sc2 = { New:"#92400E", "In Progress":"#1E40AF", Quoted:"#065F46", Closed:"#6B7280" };
   const upd = (id, s) => { setQuotes(p => p.map(q => q.id===id ? { ...q, status:s } : q)); setSq(p => p ? { ...p, status:s } : p); };
+
+  const deleteProduct = async (id) => {
+    if (!window.confirm("Delete this product? This can't be undone.")) return;
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) { alert("Error deleting: " + error.message); return; }
+    refreshProducts();
+  };
+
+  const saveProduct = async (formData, editId) => {
+    setSaving(true);
+    const row = productToRow(formData);
+    let error;
+    if (editId) {
+      ({ error } = await supabase.from("products").update(row).eq("id", editId));
+    } else {
+      ({ error } = await supabase.from("products").insert(row));
+    }
+    setSaving(false);
+    if (error) { alert("Error saving: " + error.message); return; }
+    setAddOpen(false);
+    setEditing(null);
+    refreshProducts();
+  };
+
+  const seedDatabase = async () => {
+    if (!window.confirm(`Import all ${SEED_PRODUCTS.length} starter products into your live database? Do this once.`)) return;
+    setSeeding(true);
+    const rows = SEED_PRODUCTS.map(productToRow);
+    const { error } = await supabase.from("products").insert(rows);
+    setSeeding(false);
+    if (error) { alert("Error importing: " + error.message); return; }
+    refreshProducts();
+  };
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: "#F4F1ED" }}>
@@ -660,21 +715,37 @@ function Admin({ go, auth, setAuth }) {
         {sec === "products" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <h1 className="sf" style={{ fontSize: 28, fontWeight: 300 }}>Products</h1>
-              <button className="b1">+ Add Product</button>
+              <div>
+                <h1 className="sf" style={{ fontSize: 28, fontWeight: 300 }}>Products</h1>
+                <p style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#9B9390", marginTop: 4 }}>{products.length} live on your website</p>
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                {products.length < 5 && (
+                  <button className="b3" onClick={seedDatabase} disabled={seeding}>{seeding ? "Importing..." : "Import Starter Catalog"}</button>
+                )}
+                <button className="b1" onClick={() => { setEditing(null); setAddOpen(true); }}>+ Add Product</button>
+              </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16 }}>
-              {PRODUCTS.map(p => (
+              {products.map(p => (
                 <div key={p.id} style={{ background: "white", overflow: "hidden" }}>
-                  <div style={{ height: 150, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: 26 }}><FurnitureSVG type={p.img} color="#8B6F5C" /></div>
+                  <div style={{ height: 150, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, position: "relative", overflow: "hidden" }}>
+                    {p.colors[0]?.photo
+                      ? <img src={p.colors[0].photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : <FurnitureSVG type={p.img} color="#8B6F5C" />}
+                  </div>
                   <div style={{ padding: "12px 16px 16px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 2 }}>
                       <span className="sf" style={{ fontSize: 16 }}>{p.name}</span>
                       <span style={{ background: p.tag==="New"?"#DBEAFE":p.tag==="Bestseller"?"#D1FAE5":"#FEF3C7", color: p.tag==="New"?"#1E40AF":p.tag==="Bestseller"?"#065F46":"#92400E", fontSize: 9, letterSpacing: ".09em", textTransform: "uppercase", padding: "2px 7px", fontFamily: "'DM Sans'" }}>{p.tag}</span>
                     </div>
                     <div style={{ fontFamily: "'DM Sans'", fontSize: 11, color: "#9B9390" }}>{p.cat} · {p.mat}</div>
-                    <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#8B6F5C", marginTop: 5 }}>From ${p.price.toLocaleString()}</div>
-                    <div style={{ display: "flex", gap: 4, marginTop: 7 }}>{p.colors.map((c,i) => <div key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c.h }} />)}</div>
+                    <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#8B6F5C", marginTop: 5 }}>From ${Number(p.price).toLocaleString()}</div>
+                    <div style={{ display: "flex", gap: 4, marginTop: 7 }}>{(p.colors||[]).map((c,i) => <div key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c.h }} />)}</div>
+                    <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
+                      <button className="b3" style={{ flex: 1, justifyContent: "center", padding: "6px 0", fontSize: 10 }} onClick={() => { setEditing(p); setAddOpen(true); }}>Edit</button>
+                      <button style={{ flex: 1, background: "transparent", border: "1px solid #E5B4B4", color: "#C0392B", padding: "6px 0", fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", cursor: "pointer" }} onClick={() => deleteProduct(p.id)}>Delete</button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -709,7 +780,119 @@ function Admin({ go, auth, setAuth }) {
           </div>
         )}
       </div>
+
+      {addOpen && (
+        <ProductFormModal
+          initial={editing}
+          saving={saving}
+          onClose={() => { setAddOpen(false); setEditing(null); }}
+          onSave={(data) => saveProduct(data, editing?.id)}
+        />
+      )}
     </div>
+  );
+}
+
+/* ─── PRODUCT ADD/EDIT MODAL ─── */
+function ProductFormModal({ initial, onClose, onSave, saving }) {
+  const [f, setF] = useState({
+    name: initial?.name || "",
+    cat: initial?.cat || "Living Room",
+    mat: initial?.mat || "",
+    price: initial?.price || "",
+    tag: initial?.tag || "New",
+    desc: initial?.desc || "",
+    dims: initial?.dims || "",
+    colorName: initial?.colors?.[0]?.n || "Natural",
+    colorHex: initial?.colors?.[0]?.h || "#8B6F5C",
+    photo: initial?.colors?.[0]?.photo || "",
+    sizesText: (initial?.sizes || ["Standard"]).join(", "),
+  });
+  const u = (k, v) => setF(p => ({ ...p, [k]: v }));
+
+  const submit = () => {
+    if (!f.name || !f.price) { alert("Name and price are required."); return; }
+    onSave({
+      name: f.name,
+      cat: f.cat,
+      mat: f.mat,
+      price: f.price,
+      tag: f.tag,
+      desc: f.desc,
+      dims: f.dims,
+      colors: [{ n: f.colorName, h: f.colorHex, photo: f.photo || null }],
+      sizes: f.sizesText.split(",").map(s => s.trim()).filter(Boolean),
+    });
+  };
+
+  return (
+    <>
+      <div className="ov" onClick={onClose} />
+      <div className="mo" style={{ width: "min(94vw,600px)", padding: "40px 40px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <h2 className="sf" style={{ fontSize: 26, fontWeight: 300 }}>{initial ? "Edit Product" : "Add New Product"}</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#9B9390", fontSize: 22 }}>×</button>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Product Name *</label>
+            <input className="inp" value={f.name} onChange={e => u("name", e.target.value)} placeholder="e.g. Walnut Console Table" />
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Category</label>
+            <select className="inp" value={f.cat} onChange={e => u("cat", e.target.value)}>
+              {["Living Room","Bedroom","Dining","Office","Entryway"].map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Tag</label>
+            <select className="inp" value={f.tag} onChange={e => u("tag", e.target.value)}>
+              {["New","Bestseller","Popular","Custom"].map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Material</label>
+            <input className="inp" value={f.mat} onChange={e => u("mat", e.target.value)} placeholder="e.g. Solid Walnut" />
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Price (USD) *</label>
+            <input className="inp" type="number" value={f.price} onChange={e => u("price", e.target.value)} placeholder="e.g. 800" />
+          </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Description</label>
+            <textarea className="inp" rows={3} style={{ resize: "vertical" }} value={f.desc} onChange={e => u("desc", e.target.value)} placeholder="Short description of the piece..." />
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Dimensions</label>
+            <input className="inp" value={f.dims} onChange={e => u("dims", e.target.value)} placeholder="e.g. W180 × D90 × H75 cm" />
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Sizes (comma separated)</label>
+            <input className="inp" value={f.sizesText} onChange={e => u("sizesText", e.target.value)} placeholder="Standard, Large, Custom" />
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Color Name</label>
+            <input className="inp" value={f.colorName} onChange={e => u("colorName", e.target.value)} placeholder="e.g. Walnut" />
+          </div>
+          <div>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Swatch Color</label>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input type="color" value={f.colorHex} onChange={e => u("colorHex", e.target.value)} style={{ width: 40, height: 34, border: "none", background: "none", cursor: "pointer" }} />
+              <input className="inp" value={f.colorHex} onChange={e => u("colorHex", e.target.value)} />
+            </div>
+          </div>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <label style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: "#9B9390" }}>Photo filename</label>
+            <input className="inp" value={f.photo} onChange={e => u("photo", e.target.value)} placeholder="/your-photo.jpg (upload the file to public/ via GitHub first)" />
+            <div style={{ fontFamily: "'DM Sans'", fontSize: 10, color: "#9B9390", marginTop: 4 }}>Upload the image to your GitHub public/ folder, then type its filename here (e.g. /console-walnut.jpg).</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 10, marginTop: 32 }}>
+          <button className="b1" style={{ flex: 1, justifyContent: "center", padding: 14 }} onClick={submit} disabled={saving}>{saving ? "Saving..." : initial ? "Save Changes" : "Add Product"}</button>
+          <button className="b3" style={{ flex: 1, justifyContent: "center", padding: 13 }} onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </>
   );
 }
 

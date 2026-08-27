@@ -208,11 +208,18 @@ function Home({ go, products }) {
           <button className="b3" onClick={() => go("catalog")}>View All →</button>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
-          {[
-            {...(products.find(p=>p.name==="Arc Sofa")||{}), colors:[{n:"Ivory",h:"#E8E0D5",photo:"/sofa-ivory.jpg"}]},
-            {...(products.find(p=>p.name==="Walnut Bench")||{}), colors:[{n:"Walnut + Sand",h:"#8B6F5C",photo:"/shoe-bench.jpg"}]},
-            {...(products.find(p=>p.name==="Oak Media Wall")||{}), colors:[{n:"Natural Oak",h:"#8B6F5C",photo:"/tv-oak.jpg"}]},
-          ].map(p => <ProductCard key={p.id} p={p} onClick={() => go("catalog")} />)}
+          {(() => {
+            const overrides = [
+              { name: "Arc Sofa", colors: [{ n: "Ivory", h: "#E8E0D5", photo: "/sofa-ivory.jpg" }] },
+              { name: "Walnut Bench", colors: [{ n: "Walnut + Sand", h: "#8B6F5C", photo: "/shoe-bench.jpg" }] },
+              { name: "Oak Media Wall", colors: [{ n: "Natural Oak", h: "#8B6F5C", photo: "/tv-oak.jpg" }] },
+            ];
+            const featured = overrides
+              .map(o => { const match = products.find(p => p.name === o.name); return match ? { ...match, colors: o.colors } : null; })
+              .filter(Boolean);
+            const shown = featured.length > 0 ? featured : products.slice(0, 3);
+            return shown.map(p => <ProductCard key={p.id} p={p} onClick={() => go("catalog")} />);
+          })()}
         </div>
       </div>
 
@@ -290,22 +297,24 @@ function Home({ go, products }) {
 }
 
 function ProductCard({ p, onClick }) {
+  if (!p) return null;
+  const colors = p.colors && p.colors.length > 0 ? p.colors : [{ n: "Natural", h: "#8B6F5C", photo: null }];
   const tagStyle = p.tag === "New" ? { background: "#1A1714", color: "white" } : p.tag === "Bestseller" ? { background: "#8B6F5C", color: "white" } : { background: "transparent", color: "#8B6F5C", border: "1px solid #8B6F5C" };
-  const mainPhoto = p.colors[0].photo;
+  const mainPhoto = colors[0].photo;
   return (
     <div className="card" onClick={onClick}>
       <div style={{ height: 230, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: mainPhoto ? 0 : 38, position: "relative", overflow: "hidden" }}>
-        {mainPhoto ? <img src={mainPhoto} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={p.img} color={p.colors[0].h} />}
-        <div style={{ position: "absolute", top: 12, left: 12 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".11em", textTransform: "uppercase", padding: "3px 9px", ...tagStyle }}>{p.tag}</span></div>
+        {mainPhoto ? <img src={mainPhoto} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={p.img} color={colors[0].h} />}
+        <div style={{ position: "absolute", top: 12, left: 12 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".11em", textTransform: "uppercase", padding: "3px 9px", ...tagStyle }}>{p.tag || "New"}</span></div>
       </div>
       <div style={{ padding: "18px 22px 24px" }}>
         <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".12em", color: "#9B9390", textTransform: "uppercase", marginBottom: 5 }}>{p.cat}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
           <span className="sf" style={{ fontSize: 20, fontWeight: 300 }}>{p.name}</span>
-          <span style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#8B6F5C" }}>From ${p.price.toLocaleString()}</span>
+          <span style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#8B6F5C" }}>From ${Number(p.price || 0).toLocaleString()}</span>
         </div>
         <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#9B9390", marginTop: 3 }}>{p.mat}</div>
-        <div style={{ display: "flex", gap: 5, marginTop: 11 }}>{p.colors.map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c.h }} />)}</div>
+        <div style={{ display: "flex", gap: 5, marginTop: 11 }}>{colors.map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c.h }} />)}</div>
       </div>
     </div>
   );
@@ -331,23 +340,25 @@ function Catalog({ go, products }) {
           {cats.map(c => <button key={c} onClick={() => setCat(c)} style={{ background: cat===c ? "#1A1714" : "transparent", color: cat===c ? "white" : "#6B6460", border: `1px solid ${cat===c ? "#1A1714" : "rgba(26,23,20,.18)"}`, padding: "7px 18px", fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".11em", textTransform: "uppercase", cursor: "pointer", transition: "all .22s" }}>{c}</button>)}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))", gap: 20 }}>
-          {list.map(p => (
+          {list.map(p => {
+            const pc = p.colors && p.colors.length > 0 ? p.colors : [{ n: "Natural", h: "#8B6F5C", photo: null }];
+            return (
             <div key={p.id} className="card" onClick={() => { setSel(p); setSc(0); setSs(0); }}>
-              <div style={{ height: 220, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: p.colors[0].photo ? 0 : 36, position: "relative", overflow: "hidden" }}>
-                {p.colors[0].photo ? <img src={p.colors[0].photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={p.img} color={p.colors[0].h} />}
-                <div style={{ position: "absolute", top: 11, left: 11 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".11em", textTransform: "uppercase", padding: "3px 9px", ...tagStyle(p.tag) }}>{p.tag}</span></div>
+              <div style={{ height: 220, background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center", padding: pc[0].photo ? 0 : 36, position: "relative", overflow: "hidden" }}>
+                {pc[0].photo ? <img src={pc[0].photo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "20px", background: "#FAF8F5" }} /> : <FurnitureSVG type={p.img} color={pc[0].h} />}
+                <div style={{ position: "absolute", top: 11, left: 11 }}><span style={{ fontFamily: "'DM Sans'", fontSize: 9, letterSpacing: ".11em", textTransform: "uppercase", padding: "3px 9px", ...tagStyle(p.tag) }}>{p.tag || "New"}</span></div>
               </div>
               <div style={{ padding: "16px 20px 22px" }}>
                 <div style={{ fontFamily: "'DM Sans'", fontSize: 10, letterSpacing: ".12em", color: "#9B9390", textTransform: "uppercase", marginBottom: 4 }}>{p.cat}</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                   <span className="sf" style={{ fontSize: 19, fontWeight: 300 }}>{p.name}</span>
-                  <span style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#8B6F5C" }}>From ${p.price.toLocaleString()}</span>
+                  <span style={{ fontFamily: "'DM Sans'", fontSize: 13, color: "#8B6F5C" }}>From ${Number(p.price || 0).toLocaleString()}</span>
                 </div>
                 <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#9B9390", marginTop: 3 }}>{p.mat}</div>
-                <div style={{ display: "flex", gap: 5, marginTop: 10 }}>{p.colors.map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c.h }} />)}</div>
+                <div style={{ display: "flex", gap: 5, marginTop: 10 }}>{pc.map((c,i) => <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c.h }} />)}</div>
               </div>
             </div>
-          ))}
+          );})}
         </div>
       </div>
 
@@ -402,7 +413,7 @@ function Catalog({ go, products }) {
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{sel.sizes.map((s,i) => <button key={i} className={`szb${ss===i?" on":""}`} onClick={() => setSs(i)}>{s}</button>)}</div>
               </div>
               <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#7A736E", marginBottom: 20 }}>📐 {sel.dims}</div>
-              <div className="sf" style={{ fontSize: 26, color: "#8B6F5C", marginBottom: 22 }}>From ${sel.price.toLocaleString()}</div>
+              <div className="sf" style={{ fontSize: 26, color: "#8B6F5C", marginBottom: 22 }}>From ${Number(sel.price || 0).toLocaleString()}</div>
               <button className="b1" style={{ width: "100%", justifyContent: "center", padding: 14 }} onClick={() => { setSel(null); setQP(sel); setQOpen(true); }}>Request a Quote for This Piece</button>
               <a href={`https://wa.me/96100000000?text=Hi!%20Interested%20in%20the%20${encodeURIComponent(sel.name)}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", marginTop: 10 }}>
                 <button className="b3" style={{ width: "100%", justifyContent: "center", padding: 12 }}>💬 Chat on WhatsApp</button>
@@ -447,7 +458,7 @@ function Viz({ go, products }) {
     setMsgs(p => [...p, { r: "user", t: u }]);
     setLoading(true);
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: `You are IDEA Furniture's room design assistant — a premium Lebanese furniture brand. Be warm, concise (2-3 sentences max), and design-savvy. ${sp ? `Customer is looking at: ${sp.name} in ${sp.colors[sc].n} (${sp.mat}), from $${sp.price.toLocaleString()}.` : ""} ${roomImg ? "They uploaded a room photo." : ""} Give specific advice about placement, scale, color harmony.`, messages: [...msgs.slice(-5).map(m => ({ role: m.r === "ai" ? "assistant" : "user", content: m.t })), { role: "user", content: u }] }) });
+      const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: `You are IDEA Furniture's room design assistant — a premium Lebanese furniture brand. Be warm, concise (2-3 sentences max), and design-savvy. ${sp ? `Customer is looking at: ${sp.name} in ${sp.colors?.[sc]?.n || "its default finish"} (${sp.mat}), from $${Number(sp.price || 0).toLocaleString()}.` : ""} ${roomImg ? "They uploaded a room photo." : ""} Give specific advice about placement, scale, color harmony.`, messages: [...msgs.slice(-5).map(m => ({ role: m.r === "ai" ? "assistant" : "user", content: m.t })), { role: "user", content: u }] }) });
       const d = await res.json();
       setMsgs(p => [...p, { r: "ai", t: d.content?.map(c => c.text || "").join("") || "Tell me about your room and I'll give my best design advice!" }]);
     } catch { setMsgs(p => [...p, { r: "ai", t: "Tell me about your room dimensions and style — I'll give you my best placement advice!" }]); }
@@ -475,7 +486,7 @@ function Viz({ go, products }) {
           {products.map(p => (
             <div key={p.id} className={`pi${sp?.id === p.id ? " on" : ""}`} onClick={() => pick(p)}>
               <div style={{ width: 44, height: 34, flexShrink: 0 }}><FurnitureSVG type={p.img} color={sp?.id === p.id ? "#8B6F5C" : "#C9B99A"} /></div>
-              <div><div style={{ fontFamily: "'DM Sans'", fontSize: 12, fontWeight: sp?.id === p.id ? 500 : 300, color: sp?.id === p.id ? "#1A1714" : "#5A5350" }}>{p.name}</div><div style={{ fontFamily: "'DM Sans'", fontSize: 10, color: "#8B6F5C", marginTop: 1 }}>${p.price.toLocaleString()}</div></div>
+              <div><div style={{ fontFamily: "'DM Sans'", fontSize: 12, fontWeight: sp?.id === p.id ? 500 : 300, color: sp?.id === p.id ? "#1A1714" : "#5A5350" }}>{p.name}</div><div style={{ fontFamily: "'DM Sans'", fontSize: 10, color: "#8B6F5C", marginTop: 1 }}>${Number(p.price || 0).toLocaleString()}</div></div>
             </div>
           ))}
         </div>
@@ -736,7 +747,7 @@ function Admin({ go, auth, setAuth, products, refreshProducts, dbReady }) {
                       <span style={{ background: p.tag==="New"?"#DBEAFE":p.tag==="Bestseller"?"#D1FAE5":"#FEF3C7", color: p.tag==="New"?"#1E40AF":p.tag==="Bestseller"?"#065F46":"#92400E", fontSize: 9, letterSpacing: ".09em", textTransform: "uppercase", padding: "2px 7px", fontFamily: "'DM Sans'" }}>{p.tag}</span>
                     </div>
                     <div style={{ fontFamily: "'DM Sans'", fontSize: 11, color: "#9B9390" }}>{p.cat} · {p.mat}</div>
-                    <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#8B6F5C", marginTop: 5 }}>From ${Number(p.price).toLocaleString()}</div>
+                    <div style={{ fontFamily: "'DM Sans'", fontSize: 12, color: "#8B6F5C", marginTop: 5 }}>From ${Number(p.price || 0).toLocaleString()}</div>
                     <div style={{ display: "flex", gap: 4, marginTop: 7 }}>{(p.colors||[]).map((c,i) => <div key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c.h }} />)}</div>
                     <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
                       <button className="b3" style={{ flex: 1, justifyContent: "center", padding: "6px 0", fontSize: 10 }} onClick={() => { setEditing(p); setAddOpen(true); }}>Edit</button>

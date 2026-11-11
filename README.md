@@ -1,42 +1,42 @@
-# IDEA Furniture Website
+# IDEA Furniture
 
-Premium furniture e-commerce platform built for IDEA Furniture, Beirut.
+The website for IDEA: a public shop (collection, piece pages, bespoke brief, workshop, contact) and a private admin at `/admin`.
 
-## Features
-- Full homepage with hero, catalog preview, process, testimonials
-- Complete furniture catalog (10 pieces, 4 categories) with filters
-- Product detail modal with color/size selector
-- AI Room Visualizer — upload your room photo + AI design assistant
-- Quote request system with WhatsApp integration
-- Admin dashboard (login: admin / idea2024)
+Built with React (Create React App), React Router and Supabase. Hosted on Vercel.
 
-## Deploy to Vercel (3 steps)
+## Run it on your computer
 
-### 1. Upload to GitHub
-- Go to github.com/new
-- Name it `idea-furniture`
-- Upload all these files
-- Click "Commit changes"
-
-### 2. Deploy on Vercel
-- Go to vercel.com/new
-- Import your GitHub repo
-- Click Deploy
-- Done! Your site is live.
-
-### 3. Customize
-Before deploying, update these in `src/App.jsx`:
-- WhatsApp number: replace `96100000000` with your real number
-- Email: replace `hello@idea.lb` with your real email
-- Admin password: replace `idea2024` with a secure password
-
-## Local Development
-```bash
+```
 npm install
 npm start
 ```
 
-## Tech Stack
-- React 18
-- No external UI libraries (pure CSS-in-JS)
-- Anthropic Claude API (for room visualizer chat)
+## Publish
+
+Commit and push with GitHub Desktop. Vercel builds and publishes automatically.
+
+## One-time database setup
+
+1. Open supabase.com and your project. If it says the project is paused, press **Restore**.
+2. Open `supabase/setup.sql`, replace `YOUR_EMAIL_HERE` with your own email, paste it into **SQL Editor** and press **Run**.
+3. Go to **Authentication > Users > Add user** and create a user with that same email and a strong password. Tick "Auto confirm user".
+4. Go to **Authentication > Sign In / Providers** and turn off "Allow new users to sign up".
+5. Sign in at `yoursite/admin`, open **Settings** and add your WhatsApp number, phone, address and hours.
+
+Until step 2 is done the public site still works, but quote requests are not stored and the admin cannot save.
+
+## Where things are
+
+| Path | What it is |
+| --- | --- |
+| `src/pages.jsx` | The public pages |
+| `src/site.jsx` | Header, footer, quote form, shared parts |
+| `src/admin.jsx` | The admin |
+| `src/data.js` | Built-in catalogue (shown if the database is unreachable) and data loading |
+| `src/styles.css` | All styling |
+| `public/` | Photos and icons |
+| `api/share.js` | Link previews for WhatsApp and social apps |
+| `api/keepalive.js` | Daily ping so the free Supabase project is not paused |
+| `supabase/setup.sql` | Database tables and security rules |
+
+Pieces, photos, contact details and customer quotes are all edited in the admin, not in the code.
